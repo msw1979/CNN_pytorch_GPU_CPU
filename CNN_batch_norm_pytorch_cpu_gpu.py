@@ -173,8 +173,8 @@ def train_model(model,train_loader,validation_loader,optimizer,n_epochs,N_test, 
         #append accuracy    
         val_acc.append(accuracy)
         #print the validation infor to screen and file
-        print('Validation, Epoch: {}, Loss: {:.2f}, Accuracy: {:.2f}, Classified: {}, Misclassifier: {}'.format(epoch,loss_sum,accuracy, correct_sum, N_test-correct_sum))    
-        print('Validation, Epoch: {}, Loss: {:.2f}, Accuracy: {:.2f}, Classified: {}, Misclassifier: {}'.format(epoch,loss_sum,accuracy, correct_sum, N_test-correct_sum), file=output_file)
+        print('Validation, Epoch: {}, Loss: {:.2f}, Accuracy: {:.2f}, Classified: {}, Misclassified: {}'.format(epoch,loss_sum,accuracy, correct_sum, N_test-correct_sum))    
+        print('Validation, Epoch: {}, Loss: {:.2f}, Accuracy: {:.2f}, Classified: {}, Misclassified: {}'.format(epoch,loss_sum,accuracy, correct_sum, N_test-correct_sum), file=output_file)
     
     #empty cuda cache
     #torch.cuda.empty_cache()
@@ -190,7 +190,7 @@ def train_model(model,train_loader,validation_loader,optimizer,n_epochs,N_test, 
         print('Epoch: {}, category: {}, accuracy: {:.2f}'.format(epoch, category[i], acc_per_categ[i]))      
         print('Epoch: {}, category: {}, accuracy: {:.2f}'.format(epoch, category[i], acc_per_categ[i]), file=output_file)      
     #confusion matrix
-    conf_mat(Y_test.cpu(), yhat.cpu(), 'validation')
+    conf_mat(Y_test.cpu(), yhat.cpu(), category, 'validation')
     #plotting outputs
     plot_outpput(yhat, X_test.cpu(), Y_test, 'validation')
 
@@ -249,7 +249,7 @@ def plot_outpput(y_actual, X_test, Y_test, name):
     plt.savefig('test_miclassified_%s.png'%(name))
 
 #plot confusion matrix
-def conf_mat(y_test, yhat, name):
+def conf_mat(y_test, yhat, category, name):
     #calculate confusion matrix
     CM = confusion_matrix(y_test, yhat, labels=[0,1,2,3,4,5,6,7,8,9])
 
@@ -260,8 +260,8 @@ def conf_mat(y_test, yhat, name):
     for i in range(CM.shape[0]):
         for j in range(CM.shape[1]):
             ax.text(x=j, y=i,s=CM[i, j], va='center', ha='center', size='medium')
-    plt.xticks(np.arange(0, 10, 1), ['0','1','2','3','4','5','6','7','8','9'])
-    plt.yticks(np.arange(0, 10, 1), ['0','1','2','3','4','5','6','7','8','9'])
+    plt.xticks(np.arange(0, 10, 1), category, fontsize = 8)
+    plt.yticks(np.arange(0, 10, 1), category, fontsize = 8)
     plt.xlabel('Predictions', fontsize=16)
     plt.ylabel('Actuals', fontsize=16)
     plt.title('Confusion Matrix', fontsize=16)
